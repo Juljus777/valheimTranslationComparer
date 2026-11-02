@@ -15,7 +15,10 @@ const extractTranslationsFromTable = (tables) => {
 		const rows = table.querySelectorAll("tbody tr");
 		for (const row of rows) {
 			const columns = Array.from(row.querySelectorAll("td"));
-			const [key, text] = columns.map(column => column.innerText);
+			const [key, text] = columns.map(column => {
+				let text = column.innerText;
+				return text;
+			});
 			translations[key] = text;
 		}
 	}
@@ -68,8 +71,16 @@ const getChangedTranslations = (oldVersion, newVersion) => {
 		}
 	});
 
-	console.log("Changed descriptions: ", changedValues);
-	console.log("Removed descriptions: ", removedValues);
+	const addedValues = {};
+	Object.keys(newVersion).forEach(key => {
+		if (!(key in oldVersion)) {
+			addedValues[key] = newVersion[key];
+		}
+	});
+
+	console.log(`Changed descriptions (${Object.keys(changedValues).length}): `, changedValues);
+	console.log(`Removed descriptions: (${removedValues.length})`, removedValues);
+	console.log(`Added descriptions (${Object.keys(addedValues).length}): `, addedValues);
 }
 
 const versionNames = ["translations_0_217_46", "translations_0_218_15", "translations_1_0_0"]
@@ -87,5 +98,4 @@ const getTranslationsByVersions = () => {
 		getChangedTranslations(translationObjectsByVersion[i], translationObjectsByVersion[i + 1]);
 	}
 }
-
 getTranslationsByVersions();
